@@ -50,3 +50,34 @@
 - Function-level docstrings
 - Usage examples in `README.md` or report
 - Inline comments for algorithm steps
+
+## 8. Usage
+
+- Run solver module:
+
+  ```bash
+  python -m Modules.gauss_scaled
+  ```
+
+- Interactive walkthrough (optional):
+
+  ```bash
+  streamlit run streamlit_app.py
+  ```
+
+## 9. Timeline
+
+- **Apr 17–20**: finalize docs & scaffolding
+- **Apr 21–24**: implement compute_scales & select_pivot
+- **Apr 25–28**: implement elimination & back_substitution
+- **Apr 29–May 1**: full solver & tests
+- **May 2–4**: visualization & report
+- **May 5–7**: optional UI & polish
+- **May 8**: final review & packaging
+- **May 9, 10:50 AM**: submission
+
+## 10. Contact
+
+- **Developer**: John Akujobi
+- **Course**: MATH 374 – Computational Theory
+- **Due**: May 9, 2025, 10:50 AM
