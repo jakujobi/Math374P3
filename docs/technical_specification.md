@@ -2,7 +2,7 @@
 
 ## 1 Introduction
 
-* **Project title:** Gaussian Elimination Educational Demo (Streamlit App)
+* ****Project title:** CSC 374 Project 3: Gaussian Elimination  (Streamlit App)**
 * **Author:** John Akujobi, Computer Science student at South Dakota State University
 * **GitHub:**[jakujobi](https://github.com/jakujobi)
 * **Affiliation:** Jerome J. Lohr College of Engineering, Department of Mathematics and Statistics, SDSU
