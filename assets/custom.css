@@ -1,0 +1,31 @@
+/* Fade-in animation for dataframes */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Apply fade-in to all Streamlit dataframes */
+[data-testid="stDataFrame"] {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Default highlight colors (for potential class-based styling) */
+.highlight-pivot {
+  background-color: lightblue !important;
+}
+
+.highlight-pivot-row {
+  background-color: lightblue !important;
+}
+
+.highlight-pivot-green {
+  background-color: lightgreen !important;
+}
+
+.highlight-target {
+  background-color: lightcoral !important;
+}
+
+.highlight-backsub {
+  background-color: lightyellow !important;
+} 
