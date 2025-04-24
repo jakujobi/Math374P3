@@ -44,6 +44,26 @@ def highlight_and_show(A, b, step):
         return styles
     st.dataframe(df.style.apply(highlight_row, axis=1))
 
+# Format a human-readable comment for each step
+def format_step_comment(step):
+    typ = step.get('step')
+    if typ == 'swap':
+        return (f"Column {step['k']}: pivot row {step['pivot_row']} selected "
+                f"with scaled ratio {step['ratio']:.3f}. Swapped row {step['k']} and {step['pivot_row']}.")
+    elif typ == 'pivot':
+        return (f"Column {step['k']}: pivot row {step['pivot_row']} selected "
+                f"with scaled ratio {step['ratio']:.3f}. No swap needed.")
+    elif typ == 'elimination':
+        num = step.get('mult_num')
+        den = step.get('mult_den')
+        m = step.get('multiplier')
+        return (f"Row {step['i']}: eliminate A[{step['i']},{step['k']}] using "
+                f"multiplier {num}/{den} = {m:.3f}.")
+    elif typ == 'back_substitution':
+        return (f"Back substitute for x[{step['i']}]: "
+                f"x[{step['i']}] = {step['value']:.6g}.")
+    return ""
+
 # Render a single example with all its steps
 def render_example(A, b, title='Example'):
     st.header(title)
@@ -59,6 +79,10 @@ def render_example(A, b, title='Example'):
             expanded=(idx == selected)
         ):
             highlight_and_show(step['A'], step['b'], step)
+            # Show a formatted comment under the step
+            comment = format_step_comment(step)
+            if comment:
+                st.markdown(f"**{comment}**")
     st.subheader('Solution')
     st.write(x)
 
@@ -79,17 +103,15 @@ def render_playground():
     st.title('Interactive Playground')
     n = st.selectbox('Matrix size', [3, 4])
     with st.form('input_form'):
-        st.write('Enter matrix A:')
+        st.write('Enter the augmented matrix [A | b]:')
+        # Build A and b side by side
         A = np.zeros((n, n), float)
-        for i in range(n):
-            cols = st.columns(n)
-            for j, col in enumerate(cols):
-                A[i, j] = col.number_input(f'A[{i},{j}]', key=f'A-{i}-{j}')
-        st.write('Enter vector b:')
         b = np.zeros(n, float)
-        cols = st.columns(n)
-        for i, col in enumerate(cols):
-            b[i] = col.number_input(f'b[{i}]', key=f'b-{i}')
+        for i in range(n):
+            cols = st.columns(n + 1)
+            for j in range(n):
+                A[i, j] = cols[j].number_input(f'A[{i},{j}]', key=f'A-{i}-{j}')
+            b[i] = cols[n].number_input(f'b[{i}]', key=f'b-{i}')
         submitted = st.form_submit_button('Solve')
     if submitted:
         render_example(A, b, title='Playground Solution')
