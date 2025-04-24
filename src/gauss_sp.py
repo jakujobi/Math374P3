@@ -23,8 +23,10 @@ def scaled_partial_pivot_gauss(A, b, return_steps=False):
     for k in range(n - 1):
         # Determine pivot row based on scaled ratios
         ratios = np.abs(A[k:, k]) / s[k:]
-        p = k + np.argmax(ratios)
-        # Swap rows if necessary
+        idx_max = np.argmax(ratios)
+        p = k + idx_max
+        ratio = float(ratios[idx_max])  # scaled ratio for pivot
+        # Swap rows if necessary, logging ratio
         if p != k:
             A[[k, p], :] = A[[p, k], :]
             b[k], b[p] = b[p], b[k]
@@ -32,6 +34,7 @@ def scaled_partial_pivot_gauss(A, b, return_steps=False):
                 "step": "swap",
                 "k": k,
                 "pivot_row": p,
+                "ratio": ratio,
                 "A": A.copy(),
                 "b": b.copy()
             })
@@ -40,12 +43,17 @@ def scaled_partial_pivot_gauss(A, b, return_steps=False):
                 "step": "pivot",
                 "k": k,
                 "pivot_row": p,
+                "ratio": ratio,
                 "A": A.copy(),
                 "b": b.copy()
             })
         # Eliminate entries below pivot
         for i in range(k + 1, n):
-            m = A[i, k] / A[k, k]
+            # Compute multiplier with fraction components
+            num = A[i, k]
+            den = A[k, k]
+            m = num / den
+            # Perform elimination row update
             A[i, k:] = A[i, k:] - m * A[k, k:]
             b[i] = b[i] - m * b[k]
             steps.append({
@@ -53,6 +61,8 @@ def scaled_partial_pivot_gauss(A, b, return_steps=False):
                 "k": k,
                 "i": i,
                 "multiplier": m,
+                "mult_num": num,
+                "mult_den": den,
                 "A": A.copy(),
                 "b": b.copy()
             })
