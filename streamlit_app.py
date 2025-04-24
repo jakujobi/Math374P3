@@ -91,9 +91,14 @@ def render_walkthrough():
     b3 = np.array([10.0,8.0,3.0])
     render_example(A3, b3, title='3×3 Example')
     # 4×4 example
-    A4 = np.array([[2.0,1.0,1.0,0.0],[4.0,3.0,3.0,1.0],[8.0,7.0,9.0,5.0],[6.0,7.0,9.0,8.0]])
-    b4 = np.array([4.0,10.0,28.0,29.0])
-    render_example(A4, b4, title='4×4 Example')
+    A4 = np.array([
+        [3.0,  -13.0,  9.0,   3.0],
+        [-6.0,   4.0,  1.0, -18.0],
+        [6.0,   -2.0,  2.0,   4.0],
+        [12.0,  -8.0,  6.0,  10.0]
+    ])
+    b4 = np.array([-19.0, -34.0, 16.0, 26.0])
+    render_example(A4, b4, title='4×4 Example (Solution: 3, 1, -2, 1)')
 
 # Interactive playground page: user can enter or randomize a system
 def render_playground():
