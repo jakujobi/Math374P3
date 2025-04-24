@@ -5,6 +5,7 @@ from src.gauss_sp import scaled_partial_pivot_gauss
 import io
 import markdown
 import uuid
+import os
 # Try to import WeasyPrint for PDF export; disable if unavailable
 try:
     import weasyprint
@@ -24,8 +25,42 @@ st.set_page_config(
 
 # Load custom CSS for highlighting
 def load_css():
-    with open('assets/custom.css') as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    # Define CSS directly in the app
+    st.markdown("""
+    <style>
+    /* Fade-in animation for dataframes */
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    /* Apply fade-in to all Streamlit dataframes */
+    [data-testid="stDataFrame"] {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    /* Default highlight colors (for potential class-based styling) */
+    .highlight-pivot {
+      background-color: lightblue !important;
+    }
+
+    .highlight-pivot-row {
+      background-color: lightblue !important;
+    }
+
+    .highlight-pivot-green {
+      background-color: lightgreen !important;
+    }
+
+    .highlight-target {
+      background-color: lightcoral !important;
+    }
+
+    .highlight-backsub {
+      background-color: lightyellow !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 # Display a matrix A and vector b with row highlighting based on the current step
 def highlight_and_show(A, b, step):
@@ -33,24 +68,30 @@ def highlight_and_show(A, b, step):
     n = A.shape[0]
     df = pd.DataFrame(A, columns=[f"x{j}" for j in range(n)])
     df['b'] = b
-    # Prepare class names for each cell
-    classes = pd.DataFrame('', index=df.index, columns=df.columns)
+    
+    # Apply styling directly to the DataFrame
+    def highlight_row(row_idx, color):
+        return ['background-color: ' + color if i == row_idx else '' for i in range(len(df))]
+    
+    # Determine which row to highlight based on step type
     typ = step.get('step')
-    # Pivot or swap step: highlight entire pivot row
+    styled_df = df.copy()
+    
+    # Apply highlighting based on step type
     if typ in ('pivot', 'swap'):
         pr = step['pivot_row']
-        classes.loc[pr, :] = 'highlight-pivot-row'
-    # Elimination: highlight pivot row green and target row red
+        styled_df = df.style.apply(lambda x: highlight_row(pr, 'lightblue'), axis=0)
     elif typ == 'elimination':
-        k = step['k']; i = step['i']
-        classes.loc[k, :] = 'highlight-pivot-green'
-        classes.loc[i, :] = 'highlight-target'
-    # Back substitution: highlight the row being solved
+        k = step['k']
+        i = step['i']
+        styled_df = df.style.apply(lambda x: highlight_row(k, 'lightgreen'), axis=0).apply(
+            lambda x: highlight_row(i, 'lightcoral'), axis=0)
     elif typ == 'back_substitution':
         i = step['i']
-        classes.loc[i, :] = 'highlight-backsub'
-    # Render styled DataFrame with CSS classes
-    st.write(df.style.set_td_classes(classes))
+        styled_df = df.style.apply(lambda x: highlight_row(i, 'lightyellow'), axis=0)
+    
+    # Display the styled DataFrame
+    st.write(styled_df)
 
 # Format a human-readable comment for each step
 def format_step_comment(step):
@@ -108,12 +149,16 @@ def generate_report_md(A, b, steps, x):
 def convert_md_to_pdf(md_str):
     if not has_pdf:
         raise RuntimeError("PDF export is unavailable: WeasyPrint is not installed.")
-    # Convert markdown to HTML
-    html_body = markdown.markdown(md_str)
-    html = f"<html><body>{html_body}</body></html>"
-    # Render PDF
-    pdf = HTML(string=html).write_pdf()
-    return pdf
+    try:
+        # Convert markdown to HTML
+        html_body = markdown.markdown(md_str)
+        html = f"<html><body>{html_body}</body></html>"
+        # Render PDF
+        pdf = HTML(string=html).write_pdf()
+        return pdf
+    except Exception as e:
+        st.error(f"Error generating PDF: {str(e)}")
+        raise RuntimeError(f"PDF generation failed: {str(e)}")
 
 # Render a single example with all its steps
 def render_example(A, b, title='Example'):
@@ -151,14 +196,18 @@ def render_example(A, b, title='Example'):
     )
     # Download PDF report if available, with unique key
     if has_pdf:
-        pdf_bytes = convert_md_to_pdf(md_report)
-        st.download_button(
-            label='Download report (PDF)',
-            data=pdf_bytes,
-            file_name='gauss_elimination_report.pdf',
-            mime='application/pdf',
-            key=f'download_pdf_{slug}'
-        )
+        try:
+            pdf_bytes = convert_md_to_pdf(md_report)
+            st.download_button(
+                label='Download report (PDF)',
+                data=pdf_bytes,
+                file_name='gauss_elimination_report.pdf',
+                mime='application/pdf',
+                key=f'download_pdf_{slug}'
+            )
+        except Exception as e:
+            st.error(f"PDF export failed: {str(e)}")
+            st.warning('PDF export disabled: WeasyPrint encountered an error. Try reinstalling it.')
     else:
         st.warning('PDF export disabled: install WeasyPrint to enable this feature.')
 

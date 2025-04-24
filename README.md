@@ -1,19 +1,54 @@
-# 🎈 Blank app template
+# Gaussian Elimination with Scaled Partial Pivoting
 
-A simple Streamlit app template for you to modify!
+An interactive Streamlit application demonstrating Gaussian elimination with scaled partial pivoting, showing every internal arithmetic step.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
+## Features
 
-### How to run it on your own machine
+- **Fixed Walkthrough**: Step-by-step demonstration of Gaussian elimination for 3×3 and 4×4 systems
+- **Interactive Playground**: Enter your own systems or generate random ones
+- **Detailed Visualization**: Row highlighting shows pivot selection and elimination steps
+- **Export Options**: Download detailed reports in Markdown and PDF formats
 
-1. Install the requirements
+## Installation
 
+1. Clone the repository:
    ```
-   $ pip install -r requirements.txt
+   git clone https://github.com/jakujobi/pivot_demo.git
+   cd pivot_demo
    ```
 
-2. Run the app
+2. Install the requirements:
+   ```
+   pip install -r requirements.txt
+   ```
 
+3. For PDF export functionality, install WeasyPrint:
    ```
-   $ streamlit run streamlit_app.py
+   pip install weasyprint
    ```
+
+## Usage
+
+Run the Streamlit app:
+```
+streamlit run streamlit_app.py
+```
+
+## Project Structure
+
+- `src/gauss_sp.py`: Core solver implementation with detailed step logging
+- `streamlit_app.py`: Streamlit application with UI and visualization
+- `assets/custom.css`: Custom styling for matrix highlighting
+- `tests/test_gauss_sp.py`: Unit tests for the solver
+
+## Requirements
+
+- Python 3.10+
+- NumPy
+- Pandas
+- Streamlit
+- WeasyPrint (for PDF export)
+
+## License
+
+MIT License
