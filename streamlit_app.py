@@ -2,6 +2,17 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 from src.gauss_sp import scaled_partial_pivot_gauss
+import io
+import markdown
+import uuid
+# Try to import WeasyPrint for PDF export; disable if unavailable
+try:
+    import weasyprint
+    HTML = weasyprint.HTML
+    has_pdf = True
+except ImportError:
+    HTML = None
+    has_pdf = False
 
 # Add page config
 st.set_page_config(
@@ -61,6 +72,49 @@ def format_step_comment(step):
                 f"x[{step['i']}] = {step['value']:.6g}.")
     return ""
 
+# Generate Markdown report for a solved system
+def generate_report_md(A, b, steps, x):
+    lines = []
+    lines.append('# Gaussian Elimination Report')
+    lines.append('## Problem Statement')
+    lines.append('\n**Matrix A:**\n')
+    lines.append('```')
+    lines.append(str(A))
+    lines.append('```')
+    lines.append('\n**Vector b:**\n')
+    lines.append('```')
+    lines.append(str(b))
+    lines.append('```')
+    lines.append('\n## Step-by-step Details')
+    for idx, step in enumerate(steps, 1):
+        lines.append(f"\n### Step {idx}: {step['step'].replace('_', ' ').title()}")
+        # human-readable comment
+        comment = format_step_comment(step)
+        if comment:
+            lines.append(f"**{comment}**\n")
+        # matrix state
+        Aug = np.hstack((step['A'], step['b'].reshape(-1, 1)))
+        lines.append('```')
+        for row in Aug:
+            lines.append(str(row.tolist()))
+        lines.append('```')
+    lines.append('\n## Solution')
+    lines.append('```')
+    lines.append(str(tuple(x)))
+    lines.append('```')
+    return '\n'.join(lines)
+
+# Convert Markdown string to PDF bytes
+def convert_md_to_pdf(md_str):
+    if not has_pdf:
+        raise RuntimeError("PDF export is unavailable: WeasyPrint is not installed.")
+    # Convert markdown to HTML
+    html_body = markdown.markdown(md_str)
+    html = f"<html><body>{html_body}</body></html>"
+    # Render PDF
+    pdf = HTML(string=html).write_pdf()
+    return pdf
+
 # Render a single example with all its steps
 def render_example(A, b, title='Example'):
     st.header(title)
@@ -82,6 +136,31 @@ def render_example(A, b, title='Example'):
                 st.markdown(f"**{comment}**")
     st.subheader('Solution')
     st.write(x)
+    # Export buttons
+    md_report = generate_report_md(A, b, steps, x)
+    # Create a unique slug from title with a random UUID suffix for widget keys
+    slug_base = ''.join(c.lower() if c.isalnum() else '_' for c in title)
+    slug = f"{slug_base}_{uuid.uuid4().hex}"
+    # Download Markdown report with unique key
+    st.download_button(
+        label='Download report (Markdown)',
+        data=md_report,
+        file_name='gauss_elimination_report.md',
+        mime='text/markdown',
+        key=f'download_md_{slug}'
+    )
+    # Download PDF report if available, with unique key
+    if has_pdf:
+        pdf_bytes = convert_md_to_pdf(md_report)
+        st.download_button(
+            label='Download report (PDF)',
+            data=pdf_bytes,
+            file_name='gauss_elimination_report.pdf',
+            mime='application/pdf',
+            key=f'download_pdf_{slug}'
+        )
+    else:
+        st.warning('PDF export disabled: install WeasyPrint to enable this feature.')
 
 # Fixed walkthrough page: show two predetermined examples
 def render_walkthrough():
