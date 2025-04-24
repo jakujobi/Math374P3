@@ -3,6 +3,14 @@ import numpy as np
 import pandas as pd
 from src.gauss_sp import scaled_partial_pivot_gauss
 
+# Add page config
+st.set_page_config(
+    page_title="Gaussian Elimination Demo",
+    page_icon="🧮",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 # Load custom CSS for highlighting
 def load_css():
     with open('assets/custom.css') as f:
@@ -40,9 +48,17 @@ def highlight_and_show(A, b, step):
 def render_example(A, b, title='Example'):
     st.header(title)
     x, steps = scaled_partial_pivot_gauss(A, b, return_steps=True)
+    num_steps = len(steps)
+    selected = st.slider(
+        "Select step", min_value=1, max_value=num_steps,
+        value=1, key=f"step-{title}"
+    )
     for idx, step in enumerate(steps, 1):
-        st.subheader(f"Step {idx}: {step['step'].replace('_', ' ').title()}")
-        highlight_and_show(step['A'], step['b'], step)
+        with st.expander(
+            f"Step {idx}: {step['step'].replace('_', ' ').title()}",
+            expanded=(idx == selected)
+        ):
+            highlight_and_show(step['A'], step['b'], step)
     st.subheader('Solution')
     st.write(x)
 
@@ -62,23 +78,30 @@ def render_walkthrough():
 def render_playground():
     st.title('Interactive Playground')
     n = st.selectbox('Matrix size', [3, 4])
-    st.write('Enter matrix A:')
-    A = np.zeros((n, n), float)
-    for i in range(n):
+    with st.form('input_form'):
+        st.write('Enter matrix A:')
+        A = np.zeros((n, n), float)
+        for i in range(n):
+            cols = st.columns(n)
+            for j, col in enumerate(cols):
+                A[i, j] = col.number_input(f'A[{i},{j}]', key=f'A-{i}-{j}')
+        st.write('Enter vector b:')
+        b = np.zeros(n, float)
         cols = st.columns(n)
-        for j, col in enumerate(cols):
-            A[i, j] = col.number_input(f'A[{i},{j}]', key=f'A-{i}-{j}')
-    st.write('Enter vector b:')
-    b = np.zeros(n, float)
-    cols = st.columns(n)
-    for i, col in enumerate(cols):
-        b[i] = col.number_input(f'b[{i}]', key=f'b-{i}')
-    if st.button('Solve'):
+        for i, col in enumerate(cols):
+            b[i] = col.number_input(f'b[{i}]', key=f'b-{i}')
+        submitted = st.form_submit_button('Solve')
+    if submitted:
         render_example(A, b, title='Playground Solution')
 
 # Main entrypoint
 if __name__ == '__main__':
     load_css()
+    st.markdown(
+        '## Gaussian Elimination with Scaled Partial Pivoting\n\n'
+        'Use the sidebar to switch between the Walkthrough of fixed examples and the Interactive Playground.',
+        unsafe_allow_html=True
+    )
     page = st.sidebar.selectbox('Page', ['Walkthrough', 'Playground'])
     if page == 'Walkthrough':
         render_walkthrough()
