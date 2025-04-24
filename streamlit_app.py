@@ -18,31 +18,28 @@ def load_css():
 
 # Display a matrix A and vector b with row highlighting based on the current step
 def highlight_and_show(A, b, step):
+    # Build a DataFrame and a parallel CSS-class map
     n = A.shape[0]
     df = pd.DataFrame(A, columns=[f"x{j}" for j in range(n)])
     df['b'] = b
-    def highlight_row(row):
-        styles = [''] * len(row)
-        idx = row.name
-        action = step['step']
-        # Pivot or swap step: highlight pivot row
-        if action in ('pivot', 'swap'):
-            pr = step['pivot_row']
-            if idx == pr:
-                styles = ['background-color: lightblue'] * len(row)
-        # Elimination step: highlight pivot and target rows differently
-        elif action == 'elimination':
-            k = step['k']; i = step['i']
-            if idx == k:
-                styles = ['background-color: lightgreen'] * len(row)
-            elif idx == i:
-                styles = ['background-color: lightcoral'] * len(row)
-        # Back substitution: highlight the row being solved
-        elif action == 'back_substitution':
-            if idx == step['i']:
-                styles = ['background-color: lightyellow'] * len(row)
-        return styles
-    st.dataframe(df.style.apply(highlight_row, axis=1))
+    # Prepare class names for each cell
+    classes = pd.DataFrame('', index=df.index, columns=df.columns)
+    typ = step.get('step')
+    # Pivot or swap step: highlight entire pivot row
+    if typ in ('pivot', 'swap'):
+        pr = step['pivot_row']
+        classes.loc[pr, :] = 'highlight-pivot-row'
+    # Elimination: highlight pivot row green and target row red
+    elif typ == 'elimination':
+        k = step['k']; i = step['i']
+        classes.loc[k, :] = 'highlight-pivot-green'
+        classes.loc[i, :] = 'highlight-target'
+    # Back substitution: highlight the row being solved
+    elif typ == 'back_substitution':
+        i = step['i']
+        classes.loc[i, :] = 'highlight-backsub'
+    # Render styled DataFrame with CSS classes
+    st.write(df.style.set_td_classes(classes))
 
 # Format a human-readable comment for each step
 def format_step_comment(step):
@@ -102,6 +99,12 @@ def render_walkthrough():
 def render_playground():
     st.title('Interactive Playground')
     n = st.selectbox('Matrix size', [3, 4])
+    # Randomize button for quick testing
+    if st.button('Randomize & Solve'):
+        A_rand = np.random.randint(-10, 11, size=(n, n)).astype(float)
+        b_rand = np.random.randint(-10, 11, size=n).astype(float)
+        with st.spinner('Solving random system...'):
+            render_example(A_rand, b_rand, title=f'Random {n}×{n} System')
     with st.form('input_form'):
         st.write('Enter the augmented matrix [A | b]:')
         # Build A and b side by side
@@ -114,7 +117,8 @@ def render_playground():
             b[i] = cols[n].number_input(f'b[{i}]', key=f'b-{i}')
         submitted = st.form_submit_button('Solve')
     if submitted:
-        render_example(A, b, title='Playground Solution')
+        with st.spinner('Solving system...'):
+            render_example(A, b, title='Playground Solution')
 
 # Main entrypoint
 if __name__ == '__main__':
