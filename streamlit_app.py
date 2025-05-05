@@ -175,8 +175,9 @@ def convert_md_to_pdf(md_str):
 
 # Render a single example with all its steps
 def render_example(A, b, title='Example'):
-    st.header(title)
-    x, steps = scaled_partial_pivot_gauss(A, b, return_steps=True)
+    origA = A.copy()
+    origb = b.copy()
+    x, steps = scaled_partial_pivot_gauss(origA.copy(), origb.copy(), return_steps=True)
     num_steps = len(steps)
     selected = st.slider(
         "Select step", min_value=1, max_value=num_steps,
@@ -194,8 +195,13 @@ def render_example(A, b, title='Example'):
                 st.markdown(f"**{comment}**")
     st.subheader('Solution')
     st.write(x)
+    # Phase 6: Solution Verification
+    st.subheader('Solution Verification')
+    residual = origA.dot(x) - origb
+    st.write(f'Residual (Ax - b): {residual}')
+    st.write(f'Infinity Norm of Residual: {np.linalg.norm(residual, np.inf):.3e}')
     # Export buttons
-    md_report = generate_report_md(A, b, steps, x)
+    md_report = generate_report_md(origA, origb, steps, x)
     st.subheader('Report Preview')
     st.markdown(md_report)
     # Create a unique slug from title with a random UUID suffix for widget keys
@@ -225,6 +231,13 @@ def render_example(A, b, title='Example'):
             st.warning('PDF export disabled: WeasyPrint encountered an error. Try reinstalling it.')
     else:
         st.warning('PDF export disabled: install WeasyPrint or FPDF to enable this feature.')
+    # Phase 8: References & Notes
+    st.subheader('References & Notes')
+    st.markdown("""
+    - [Gaussian elimination – Wikipedia](https://en.wikipedia.org/wiki/Gaussian_elimination)
+    - Burden & Faires, *Numerical Analysis*, Ch. 3
+    - Uses scaled partial pivoting for numerical stability.
+    """, unsafe_allow_html=True)
 
 # Fixed walkthrough page: show two predetermined examples
 def render_walkthrough():
@@ -420,6 +433,9 @@ if __name__ == '__main__':
     )
     # Sidebar navigation
     page = st.sidebar.radio('Page', ['3×3 Example', '4×4 Example', 'Playground'])
+    st.sidebar.markdown('---')
+    st.sidebar.markdown('**Version**: 1.0.0')
+    st.sidebar.markdown('[GitHub Repository](https://github.com/jakujobi/Math374P3)')
     if page == '3×3 Example':
         A3 = np.array([[3.0, 1.0, 2.0], [1.0, 2.0, 0.0], [0.0, 1.0, 1.0]])
         b3 = np.array([10.0, 8.0, 3.0])
