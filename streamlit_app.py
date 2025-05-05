@@ -6,6 +6,8 @@ import io
 import markdown
 import uuid
 import os
+import inspect
+import time
 # Try to import WeasyPrint or FPDF for PDF export; disable if unavailable
 try:
     import weasyprint
@@ -490,6 +492,19 @@ for k in range(n-1):
                 cols[2].write(pd.DataFrame(last_elim['A'], columns=[f"x{j}" for j in range(n3)]))
             else:
                 cols[2].write('No elimination steps')
+        # Phase 5: Core Solver Code
+        source = inspect.getsource(scaled_partial_pivot_gauss)
+        st.subheader('Core Solver Code')
+        st.code(source, language='python')
+        # Phase 6: Performance Metrics
+        n3 = A3.shape[0]
+        start = time.perf_counter()
+        _ = scaled_partial_pivot_gauss(A3.copy(), b3.copy(), return_steps=False)
+        elapsed = time.perf_counter() - start
+        flops3 = int((2/3) * n3**3)
+        st.subheader('Performance Metrics')
+        st.write(f"Execution Time: {elapsed:.6f} seconds")
+        st.write(f"Estimated Floating-point Operations: {flops3:,}")
         render_example(A3, b3, title='3×3 Example')
     elif page == '4×4 Example':
         A4 = np.array([
@@ -570,6 +585,19 @@ for k in range(n-1):
                 cols[2].write(pd.DataFrame(last_elim['A'], columns=[f"x{j}" for j in range(n4)]))
             else:
                 cols[2].write('No elimination steps')
+        # Phase 5: Core Solver Code
+        source = inspect.getsource(scaled_partial_pivot_gauss)
+        st.subheader('Core Solver Code')
+        st.code(source, language='python')
+        # Phase 6: Performance Metrics
+        n4 = A4.shape[0]
+        start = time.perf_counter()
+        _ = scaled_partial_pivot_gauss(A4.copy(), b4.copy(), return_steps=False)
+        elapsed = time.perf_counter() - start
+        flops4 = int((2/3) * n4**3)
+        st.subheader('Performance Metrics')
+        st.write(f"Execution Time: {elapsed:.6f} seconds")
+        st.write(f"Estimated Floating-point Operations: {flops4:,}")
         render_example(A4, b4, title='4×4 Example (Solution: 3, 1, -2, 1)')
     else:
         render_playground()
