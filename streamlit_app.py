@@ -236,6 +236,7 @@ def render_example(A, b, title='Example'):
     st.markdown("""
     - [Gaussian elimination – Wikipedia](https://en.wikipedia.org/wiki/Gaussian_elimination)
     - Burden & Faires, *Numerical Analysis*, Ch. 3
+    - Cheney & Kincaid, *Numerical Mathematics and Computing*, 7th Edition
     - Uses scaled partial pivoting for numerical stability.
     """, unsafe_allow_html=True)
 
