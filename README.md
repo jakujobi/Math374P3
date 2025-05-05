@@ -54,6 +54,7 @@ streamlit run streamlit_app.py
 - `requirements.txt`: Python dependencies
 - `docs/`: Documentation files (Project3.md, technical_specification.md)
 - `PROJECT_SUMMARY.md`: High-level project overview
+- `reports/`: Generated Markdown and PDF reports for the 3×3 and 4×4 examples
 - `tests/`: Unit tests (test_gauss_sp.py)
 
 ## Requirements

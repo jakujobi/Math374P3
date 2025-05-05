@@ -90,6 +90,15 @@ Math374P3/
 ├─ streamlit.toml         # Streamlit page config
 ├─ pyproject.toml         # (or setup.py) for packaging (learned from Compiler Construction Class)
 ├─ .gitignore
+├─ reports/               # Generated Markdown and PDF reports
+│   ├─ Gaussian Elimination Solver 3x3.pdf
+│   ├─ Gaussian Elimination Solver 4x4.pdf
+│   ├─ Project 3 - 3x3 Matrix.md
+│   ├─ Project 3 - 3x3 Matrix.pdf
+│   ├─ Project 3 - 4x4 matrix.md
+│   ├─ Project 3 - 4x4 matrix.pdf
+│   ├─ Screenshot - Project 3 - 3x3 Matrix.pdf
+│   └─ Screenshot - Project 3 - 4x4 Matrix.pdf
 └─ README.md
 ```
 
@@ -166,6 +175,8 @@ streamlit run streamlit_app.py
 * Burden & Faires, *Numerical Analysis* (Ch. 2).
 * MIT 18.06 Linear Algebra lectures (YouTube).
 * Jake VanderPlas, *Python Data Science Handbook* (NumPy).
+* Cheney & Kincaid, *Numerical Mathematics and Computing*, 7th Edition
+* Debugging assistance from Qwen 3 locally run
 
 ---
 
