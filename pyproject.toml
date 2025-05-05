@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gaussian-elimination-demo"
-version = "0.1.0"
+version = "1.0.0"
 description = "Interactive demonstration of Gaussian elimination with scaled partial pivoting"
 readme = "README.md"
 requires-python = ">=3.10"

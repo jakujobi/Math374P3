@@ -2,7 +2,7 @@
 
 ## 1 Introduction
 
-* ****Project title:** CSC 374 Project 3: Gaussian Elimination  (Streamlit App)**
+* ****Project title:** MATH 374 Project 3: Gaussian Elimination (Streamlit App)**
 * **Author:** John Akujobi, Computer Science student at South Dakota State University
 * **GitHub:**[jakujobi](https://github.com/jakujobi)
 * **Affiliation:** Jerome J. Lohr College of Engineering, Department of Mathematics and Statistics, SDSU
@@ -78,7 +78,7 @@
 ## 9 Directory Layout
 
 ```
-pivot_demo/
+Math374P3/
 ├─ streamlit_app.py
 ├─ src/
 │   └─ gauss_sp.py
@@ -126,16 +126,16 @@ pivot_demo/
 
 ## 14 Installation & Usage
 
-```
-# Clone repo
-$ git clone https://github.com/jakujobi/pivot_demo.git
-$ cd pivot_demo
+```bash
+# Clone the repository
+git clone https://github.com/jakujobi/Math374P3.git
+cd Math374P3
 
 # Install dependencies
-$ pip install -r requirements.txt
+pip install -r requirements.txt
 
-# Run Streamlit app
-$ streamlit run streamlit_app.py
+# Run the Streamlit app
+streamlit run streamlit_app.py
 ```
 
 ## 15 Deliverables
