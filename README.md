@@ -22,9 +22,9 @@ An interactive Streamlit application demonstrating Gaussian elimination with sca
    pip install -r requirements.txt
    ```
 
-3. For PDF export functionality, install WeasyPrint:
+3. For PDF export functionality, ensure you have either WeasyPrint or FPDF2 installed:
    ```
-   pip install weasyprint
+   pip install weasyprint fpdf2
    ```
 
 ## Usage
@@ -47,7 +47,7 @@ streamlit run streamlit_app.py
 - NumPy
 - Pandas
 - Streamlit
-- WeasyPrint (for PDF export)
+- WeasyPrint or FPDF2 (for PDF export)
 
 ## License
 

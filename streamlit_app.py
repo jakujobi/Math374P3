@@ -6,14 +6,18 @@ import io
 import markdown
 import uuid
 import os
-# Try to import WeasyPrint for PDF export; disable if unavailable
+# Try to import WeasyPrint or FPDF for PDF export; disable if unavailable
 try:
     import weasyprint
+    PDF_ENGINE = 'weasyprint'
     HTML = weasyprint.HTML
-    has_pdf = True
 except ImportError:
-    HTML = None
-    has_pdf = False
+    try:
+        from fpdf import FPDF
+        PDF_ENGINE = 'fpdf'
+    except ImportError:
+        PDF_ENGINE = None
+has_pdf = PDF_ENGINE is not None
 
 # Add page config
 st.set_page_config(
@@ -148,14 +152,21 @@ def generate_report_md(A, b, steps, x):
 # Convert Markdown string to PDF bytes
 def convert_md_to_pdf(md_str):
     if not has_pdf:
-        raise RuntimeError("PDF export is unavailable: WeasyPrint is not installed.")
+        raise RuntimeError("PDF export is unavailable: no PDF engine installed (weasyprint or fpdf).")
     try:
-        # Convert markdown to HTML
-        html_body = markdown.markdown(md_str)
-        html = f"<html><body>{html_body}</body></html>"
-        # Render PDF
-        pdf = HTML(string=html).write_pdf()
-        return pdf
+        if PDF_ENGINE == 'weasyprint':
+            html_body = markdown.markdown(md_str)
+            html = f"<html><body>{html_body}</body></html>"
+            pdf = HTML(string=html).write_pdf()
+            return pdf
+        elif PDF_ENGINE == 'fpdf':
+            pdf = FPDF()
+            pdf.set_auto_page_break(auto=True, margin=15)
+            pdf.add_page()
+            pdf.set_font("Arial", size=12)
+            for line in md_str.split('\n'):
+                pdf.multi_cell(0, 8, line)
+            return pdf.output(dest='S').encode('latin-1')
     except Exception as e:
         st.error(f"Error generating PDF: {str(e)}")
         raise RuntimeError(f"PDF generation failed: {str(e)}")
@@ -209,7 +220,7 @@ def render_example(A, b, title='Example'):
             st.error(f"PDF export failed: {str(e)}")
             st.warning('PDF export disabled: WeasyPrint encountered an error. Try reinstalling it.')
     else:
-        st.warning('PDF export disabled: install WeasyPrint to enable this feature.')
+        st.warning('PDF export disabled: install WeasyPrint or FPDF to enable this feature.')
 
 # Fixed walkthrough page: show two predetermined examples
 def render_walkthrough():
@@ -258,11 +269,23 @@ if __name__ == '__main__':
     load_css()
     st.markdown(
         '## Gaussian Elimination with Scaled Partial Pivoting\n\n'
-        'Use the sidebar to switch between the Walkthrough of fixed examples and the Interactive Playground.',
+        'Use the sidebar to switch between examples and the Interactive Playground.',
         unsafe_allow_html=True
     )
-    page = st.sidebar.selectbox('Page', ['Walkthrough', 'Playground'])
-    if page == 'Walkthrough':
-        render_walkthrough()
+    # Sidebar navigation
+    page = st.sidebar.radio('Page', ['3×3 Example', '4×4 Example', 'Playground'])
+    if page == '3×3 Example':
+        A3 = np.array([[3.0, 1.0, 2.0], [1.0, 2.0, 0.0], [0.0, 1.0, 1.0]])
+        b3 = np.array([10.0, 8.0, 3.0])
+        render_example(A3, b3, title='3×3 Example')
+    elif page == '4×4 Example':
+        A4 = np.array([
+            [3.0, -13.0, 9.0, 3.0],
+            [-6.0, 4.0, 1.0, -18.0],
+            [6.0, -2.0, 2.0, 4.0],
+            [12.0, -8.0, 6.0, 10.0]
+        ])
+        b4 = np.array([-19.0, -34.0, 16.0, 26.0])
+        render_example(A4, b4, title='4×4 Example (Solution: 3, 1, -2, 1)')
     else:
         render_playground()
