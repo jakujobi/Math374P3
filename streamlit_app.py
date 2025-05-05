@@ -264,6 +264,41 @@ for k in range(n-1):
 # Back-substitution...
 ```  
 """, unsafe_allow_html=True)
+    # Phase 3: Step-by-Step Summary
+    origA3 = A3.copy()
+    x3, steps3 = scaled_partial_pivot_gauss(A3.copy(), b3.copy(), return_steps=True)
+    st.subheader('Step-by-Step Summary')
+    records3 = []
+    for idx, step in enumerate(steps3, start=1):
+        records3.append({
+            'Step #': idx,
+            'Type': step['step'],
+            'k': step.get('k', ''),
+            'i': step.get('i', ''),
+            'pivot_row': step.get('pivot_row', ''),
+            'multiplier': step.get('multiplier', ''),
+            'ratio': step.get('ratio', ''),
+            'value': step.get('value', '')
+        })
+    df3 = pd.DataFrame(records3)
+    st.table(df3)
+    # Phase 4: Intermediate Matrices
+    st.subheader('Intermediate Matrices')
+    n3 = origA3.shape[0]
+    for k in range(n3 - 1):
+        pivot_step = next(s for s in steps3 if s['step'] in ('pivot', 'swap') and s['k'] == k)
+        elim_steps = [s for s in steps3 if s['step'] == 'elimination' and s['k'] == k]
+        last_elim = elim_steps[-1] if elim_steps else None
+        cols = st.columns(3)
+        cols[0].subheader(f'Original Matrix (k={k})')
+        cols[0].write(pd.DataFrame(origA3, columns=[f"x{j}" for j in range(n3)]))
+        cols[1].subheader(f'After Pivot (k={k})')
+        cols[1].write(pd.DataFrame(pivot_step['A'], columns=[f"x{j}" for j in range(n3)]))
+        if last_elim:
+            cols[2].subheader(f'After Elimination (k={k})')
+            cols[2].write(pd.DataFrame(last_elim['A'], columns=[f"x{j}" for j in range(n3)]))
+        else:
+            cols[2].write('No elimination steps')
     render_example(A3, b3, title='3×3 Example')
     # 4×4 example
     A4 = np.array([
@@ -309,6 +344,41 @@ for k in range(n-1):
 # Back-substitution...
 ```  
 """, unsafe_allow_html=True)
+    # Phase 3: Step-by-Step Summary
+    origA4 = A4.copy()
+    x4, steps4 = scaled_partial_pivot_gauss(A4.copy(), b4.copy(), return_steps=True)
+    st.subheader('Step-by-Step Summary')
+    records4 = []
+    for idx, step in enumerate(steps4, start=1):
+        records4.append({
+            'Step #': idx,
+            'Type': step['step'],
+            'k': step.get('k', ''),
+            'i': step.get('i', ''),
+            'pivot_row': step.get('pivot_row', ''),
+            'multiplier': step.get('multiplier', ''),
+            'ratio': step.get('ratio', ''),
+            'value': step.get('value', '')
+        })
+    df4 = pd.DataFrame(records4)
+    st.table(df4)
+    # Phase 4: Intermediate Matrices
+    st.subheader('Intermediate Matrices')
+    n4 = origA4.shape[0]
+    for k in range(n4 - 1):
+        pivot_step = next(s for s in steps4 if s['step'] in ('pivot', 'swap') and s['k'] == k)
+        elim_steps = [s for s in steps4 if s['step'] == 'elimination' and s['k'] == k]
+        last_elim = elim_steps[-1] if elim_steps else None
+        cols = st.columns(3)
+        cols[0].subheader(f'Original Matrix (k={k})')
+        cols[0].write(pd.DataFrame(origA4, columns=[f"x{j}" for j in range(n4)]))
+        cols[1].subheader(f'After Pivot (k={k})')
+        cols[1].write(pd.DataFrame(pivot_step['A'], columns=[f"x{j}" for j in range(n4)]))
+        if last_elim:
+            cols[2].subheader(f'After Elimination (k={k})')
+            cols[2].write(pd.DataFrame(last_elim['A'], columns=[f"x{j}" for j in range(n4)]))
+        else:
+            cols[2].write('No elimination steps')
     render_example(A4, b4, title='4×4 Example (Solution: 3, 1, -2, 1)')
 
 # Interactive playground page: user can enter or randomize a system
@@ -385,6 +455,41 @@ for k in range(n-1):
 # Back-substitution...
 ```  
 """, unsafe_allow_html=True)
+        # Phase 3: Step-by-Step Summary
+        origA3 = A3.copy()
+        x3, steps3 = scaled_partial_pivot_gauss(A3.copy(), b3.copy(), return_steps=True)
+        st.subheader('Step-by-Step Summary')
+        records3 = []
+        for idx, step in enumerate(steps3, start=1):
+            records3.append({
+                'Step #': idx,
+                'Type': step['step'],
+                'k': step.get('k', ''),
+                'i': step.get('i', ''),
+                'pivot_row': step.get('pivot_row', ''),
+                'multiplier': step.get('multiplier', ''),
+                'ratio': step.get('ratio', ''),
+                'value': step.get('value', '')
+            })
+        df3 = pd.DataFrame(records3)
+        st.table(df3)
+        # Phase 4: Intermediate Matrices
+        st.subheader('Intermediate Matrices')
+        n3 = origA3.shape[0]
+        for k in range(n3 - 1):
+            pivot_step = next(s for s in steps3 if s['step'] in ('pivot', 'swap') and s['k'] == k)
+            elim_steps = [s for s in steps3 if s['step'] == 'elimination' and s['k'] == k]
+            last_elim = elim_steps[-1] if elim_steps else None
+            cols = st.columns(3)
+            cols[0].subheader(f'Original Matrix (k={k})')
+            cols[0].write(pd.DataFrame(origA3, columns=[f"x{j}" for j in range(n3)]))
+            cols[1].subheader(f'After Pivot (k={k})')
+            cols[1].write(pd.DataFrame(pivot_step['A'], columns=[f"x{j}" for j in range(n3)]))
+            if last_elim:
+                cols[2].subheader(f'After Elimination (k={k})')
+                cols[2].write(pd.DataFrame(last_elim['A'], columns=[f"x{j}" for j in range(n3)]))
+            else:
+                cols[2].write('No elimination steps')
         render_example(A3, b3, title='3×3 Example')
     elif page == '4×4 Example':
         A4 = np.array([
@@ -430,6 +535,41 @@ for k in range(n-1):
 # Back-substitution...
 ```  
 """, unsafe_allow_html=True)
+        # Phase 3: Step-by-Step Summary
+        origA4 = A4.copy()
+        x4, steps4 = scaled_partial_pivot_gauss(A4.copy(), b4.copy(), return_steps=True)
+        st.subheader('Step-by-Step Summary')
+        records4 = []
+        for idx, step in enumerate(steps4, start=1):
+            records4.append({
+                'Step #': idx,
+                'Type': step['step'],
+                'k': step.get('k', ''),
+                'i': step.get('i', ''),
+                'pivot_row': step.get('pivot_row', ''),
+                'multiplier': step.get('multiplier', ''),
+                'ratio': step.get('ratio', ''),
+                'value': step.get('value', '')
+            })
+        df4 = pd.DataFrame(records4)
+        st.table(df4)
+        # Phase 4: Intermediate Matrices
+        st.subheader('Intermediate Matrices')
+        n4 = origA4.shape[0]
+        for k in range(n4 - 1):
+            pivot_step = next(s for s in steps4 if s['step'] in ('pivot', 'swap') and s['k'] == k)
+            elim_steps = [s for s in steps4 if s['step'] == 'elimination' and s['k'] == k]
+            last_elim = elim_steps[-1] if elim_steps else None
+            cols = st.columns(3)
+            cols[0].subheader(f'Original Matrix (k={k})')
+            cols[0].write(pd.DataFrame(origA4, columns=[f"x{j}" for j in range(n4)]))
+            cols[1].subheader(f'After Pivot (k={k})')
+            cols[1].write(pd.DataFrame(pivot_step['A'], columns=[f"x{j}" for j in range(n4)]))
+            if last_elim:
+                cols[2].subheader(f'After Elimination (k={k})')
+                cols[2].write(pd.DataFrame(last_elim['A'], columns=[f"x{j}" for j in range(n4)]))
+            else:
+                cols[2].write('No elimination steps')
         render_example(A4, b4, title='4×4 Example (Solution: 3, 1, -2, 1)')
     else:
         render_playground()
