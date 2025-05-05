@@ -228,6 +228,42 @@ def render_walkthrough():
     # 3×3 example
     A3 = np.array([[3.0,1.0,2.0],[1.0,2.0,0.0],[0.0,1.0,1.0]])
     b3 = np.array([10.0,8.0,3.0])
+    # Phase 1: Metadata & Problem Statement
+    st.title('3×3 Example Report')
+    st.markdown("""
+**John Akujobi**  
+MATH 374: Scientific Computation (Spring 2025), South Dakota State University  
+Professor: Dr Kimn, Dept. of Math & Statistics  
+GitHub: [jakujobi](https://github.com/jakujobi)
+""", unsafe_allow_html=True)
+    st.subheader('Problem Statement')
+    st.markdown('Solve the linear system **A x = b**, where:')
+    st.code(str(A3), language='text')
+    st.code(str(b3), language='text')
+    # Phase 2: Algorithm Overview
+    st.subheader('Algorithm Overview')
+    st.markdown("""
+- Compute scale factors s[i] = max_j |A[i,j]|  
+- For each column k:
+  1. Compute ratio |A[i,k]|/s[i] for i=k..n-1  
+  2. Select pivot row with max ratio, swap if needed  
+  3. Eliminate A[i,k] for i>k  
+- Back-substitution to find solution vector x  
+
+```python
+for k in range(n-1):
+    s = [max(abs(A[i,:])) for i in range(n)]
+    ratios = [abs(A[i,k])/s[i] for i in range(k,n)]
+    pivot = k + int(np.argmax(ratios))
+    if pivot != k:
+        A[[k,pivot]] = A[[pivot,k]]
+        b[k], b[pivot] = b[pivot], b[k]
+    for i in range(k+1,n):
+        m = A[i,k]/A[k,k]
+        A[i,k:] -= m * A[k,k:]
+# Back-substitution...
+```  
+""", unsafe_allow_html=True)
     render_example(A3, b3, title='3×3 Example')
     # 4×4 example
     A4 = np.array([
@@ -237,6 +273,42 @@ def render_walkthrough():
         [12.0,  -8.0,  6.0,  10.0]
     ])
     b4 = np.array([-19.0, -34.0, 16.0, 26.0])
+    # Phase 1: Metadata & Problem Statement
+    st.title('4×4 Example Report')
+    st.markdown("""
+**John Akujobi**  
+MATH 374: Scientific Computation (Spring 2025), South Dakota State University  
+Professor: Dr Kimn, Dept. of Math & Statistics  
+GitHub: [jakujobi](https://github.com/jakujobi)
+""", unsafe_allow_html=True)
+    st.subheader('Problem Statement')
+    st.markdown('Solve the linear system **A x = b**, where:')
+    st.code(str(A4), language='text')
+    st.code(str(b4), language='text')
+    # Phase 2: Algorithm Overview
+    st.subheader('Algorithm Overview')
+    st.markdown("""
+- Compute scale factors s[i] = max_j |A[i,j]|  
+- For each column k:
+  1. Compute ratio |A[i,k]|/s[i] for i=k..n-1  
+  2. Select pivot row with max ratio, swap if needed  
+  3. Eliminate A[i,k] for i>k  
+- Back-substitution to find solution vector x  
+
+```python
+for k in range(n-1):
+    s = [max(abs(A[i,:])) for i in range(n)]
+    ratios = [abs(A[i,k])/s[i] for i in range(k,n)]
+    pivot = k + int(np.argmax(ratios))
+    if pivot != k:
+        A[[k,pivot]] = A[[pivot,k]]
+        b[k], b[pivot] = b[pivot], b[k]
+    for i in range(k+1,n):
+        m = A[i,k]/A[k,k]
+        A[i,k:] -= m * A[k,k:]
+# Back-substitution...
+```  
+""", unsafe_allow_html=True)
     render_example(A4, b4, title='4×4 Example (Solution: 3, 1, -2, 1)')
 
 # Interactive playground page: user can enter or randomize a system
@@ -277,6 +349,42 @@ if __name__ == '__main__':
     if page == '3×3 Example':
         A3 = np.array([[3.0, 1.0, 2.0], [1.0, 2.0, 0.0], [0.0, 1.0, 1.0]])
         b3 = np.array([10.0, 8.0, 3.0])
+        # Phase 1: Metadata & Problem Statement
+        st.title('3×3 Example Report')
+        st.markdown("""
+**John Akujobi**  
+MATH 374: Scientific Computation (Spring 2025), South Dakota State University  
+Professor: Dr Kimn, Dept. of Math & Statistics  
+GitHub: [jakujobi](https://github.com/jakujobi)
+""", unsafe_allow_html=True)
+        st.subheader('Problem Statement')
+        st.markdown('Solve the linear system **A x = b**, where:')
+        st.code(str(A3), language='text')
+        st.code(str(b3), language='text')
+        # Phase 2: Algorithm Overview
+        st.subheader('Algorithm Overview')
+        st.markdown("""
+- Compute scale factors s[i] = max_j |A[i,j]|  
+- For each column k:
+  1. Compute ratio |A[i,k]|/s[i] for i=k..n-1  
+  2. Select pivot row with max ratio, swap if needed  
+  3. Eliminate A[i,k] for i>k  
+- Back-substitution to find solution vector x  
+
+```python
+for k in range(n-1):
+    s = [max(abs(A[i,:])) for i in range(n)]
+    ratios = [abs(A[i,k])/s[i] for i in range(k,n)]
+    pivot = k + int(np.argmax(ratios))
+    if pivot != k:
+        A[[k,pivot]] = A[[pivot,k]]
+        b[k], b[pivot] = b[pivot], b[k]
+    for i in range(k+1,n):
+        m = A[i,k]/A[k,k]
+        A[i,k:] -= m * A[k,k:]
+# Back-substitution...
+```  
+""", unsafe_allow_html=True)
         render_example(A3, b3, title='3×3 Example')
     elif page == '4×4 Example':
         A4 = np.array([
@@ -286,6 +394,42 @@ if __name__ == '__main__':
             [12.0, -8.0, 6.0, 10.0]
         ])
         b4 = np.array([-19.0, -34.0, 16.0, 26.0])
+        # Phase 1: Metadata & Problem Statement
+        st.title('4×4 Example Report')
+        st.markdown("""
+**John Akujobi**  
+MATH 374: Scientific Computation (Spring 2025), South Dakota State University  
+Professor: Dr Kimn, Dept. of Math & Statistics  
+GitHub: [jakujobi](https://github.com/jakujobi)
+""", unsafe_allow_html=True)
+        st.subheader('Problem Statement')
+        st.markdown('Solve the linear system **A x = b**, where:')
+        st.code(str(A4), language='text')
+        st.code(str(b4), language='text')
+        # Phase 2: Algorithm Overview
+        st.subheader('Algorithm Overview')
+        st.markdown("""
+- Compute scale factors s[i] = max_j |A[i,j]|  
+- For each column k:
+  1. Compute ratio |A[i,k]|/s[i] for i=k..n-1  
+  2. Select pivot row with max ratio, swap if needed  
+  3. Eliminate A[i,k] for i>k  
+- Back-substitution to find solution vector x  
+
+```python
+for k in range(n-1):
+    s = [max(abs(A[i,:])) for i in range(n)]
+    ratios = [abs(A[i,k])/s[i] for i in range(k,n)]
+    pivot = k + int(np.argmax(ratios))
+    if pivot != k:
+        A[[k,pivot]] = A[[pivot,k]]
+        b[k], b[pivot] = b[pivot], b[k]
+    for i in range(k+1,n):
+        m = A[i,k]/A[k,k]
+        A[i,k:] -= m * A[k,k:]
+# Back-substitution...
+```  
+""", unsafe_allow_html=True)
         render_example(A4, b4, title='4×4 Example (Solution: 3, 1, -2, 1)')
     else:
         render_playground()
