@@ -13,7 +13,7 @@ try:
     import weasyprint
     PDF_ENGINE = 'weasyprint'
     HTML = weasyprint.HTML
-except ImportError:
+except (ImportError, OSError):  # also catch missing libraries
     try:
         from fpdf import FPDF
         PDF_ENGINE = 'fpdf'
