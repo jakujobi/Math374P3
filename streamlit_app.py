@@ -121,34 +121,77 @@ def format_step_comment(step):
 
 # Generate Markdown report for a solved system
 def generate_report_md(A, b, steps, x):
+    import inspect, time, numpy as np
     lines = []
+    # Title & Metadata
     lines.append('# Gaussian Elimination Report')
+    lines.append('\n**John Akujobi**  ')
+    lines.append('MATH 374: Scientific Computation (Spring 2025), South Dakota State University  ')
+    lines.append('Professor: Dr Kimn, Dept. of Math & Statistics  ')
+    lines.append('GitHub: [jakujobi](https://github.com/jakujobi)\n')
+    # Problem Statement
     lines.append('## Problem Statement')
-    lines.append('\n**Matrix A:**\n')
-    lines.append('```')
+    lines.append('**Matrix A:**')
+    lines.append('```python')
     lines.append(str(A))
     lines.append('```')
-    lines.append('\n**Vector b:**\n')
-    lines.append('```')
+    lines.append('**Vector b:**')
+    lines.append('```python')
     lines.append(str(b))
     lines.append('```')
-    lines.append('\n## Step-by-step Details')
+    # Algorithm Overview
+    lines.append('## Algorithm Overview')
+    lines.extend([
+        '- Compute scale factors s[i] = max_j |A[i,j]|',
+        '- For each column k:',
+        '  1. Compute ratio |A[i,k]|/s[i] for i=k..n-1',
+        '  2. Select pivot row with max ratio, swap if needed',
+        '  3. Eliminate A[i,k] for i>k',
+        '- Back-substitution to solve for x',
+    ])
+    lines.append('```python')
+    lines.extend(inspect.getsource(scaled_partial_pivot_gauss).splitlines())
+    lines.append('```')
+    # Step-by-step Details
+    lines.append('## Step-by-step Details')
     for idx, step in enumerate(steps, 1):
         lines.append(f"\n### Step {idx}: {step['step'].replace('_', ' ').title()}")
-        # human-readable comment
         comment = format_step_comment(step)
         if comment:
             lines.append(f"**{comment}**\n")
-        # matrix state
         Aug = np.hstack((step['A'], step['b'].reshape(-1, 1)))
-        lines.append('```')
+        lines.append('```python')
         for row in Aug:
             lines.append(str(row.tolist()))
         lines.append('```')
-    lines.append('\n## Solution')
-    lines.append('```')
+    # Solution
+    lines.append('## Solution')
+    lines.append('```python')
     lines.append(str(tuple(x)))
     lines.append('```')
+    # Performance Metrics
+    start = time.perf_counter()
+    scaled_partial_pivot_gauss(A.copy(), b.copy(), return_steps=False)
+    elapsed = time.perf_counter() - start
+    n = A.shape[0]
+    flops = int((2/3) * n**3)
+    lines.append('## Performance Metrics')
+    lines.append(f'Execution Time: {elapsed:.6f} seconds')
+    lines.append(f'Estimated Floating-point Operations: {flops}')
+    # Solution Verification
+    residual = A.dot(x) - b
+    norm = np.linalg.norm(residual, np.inf)
+    lines.append('## Solution Verification')
+    lines.append(f'**Residual (Ax - b):** {residual}')
+    lines.append(f'**Infinity Norm of Residual:** {norm:.3e}')
+    # References & Notes
+    lines.append('## References & Notes')
+    lines.extend([
+        '- [Gaussian elimination – Wikipedia](https://en.wikipedia.org/wiki/Gaussian_elimination)',
+        '- Burden & Faires, *Numerical Analysis*, Ch. 3',
+        '- Cheney & Kincaid, *Numerical Mathematics and Computing*, 7th Edition',
+        '- Uses scaled partial pivoting for numerical stability.',
+    ])
     return '\n'.join(lines)
 
 # Convert Markdown string to PDF bytes
