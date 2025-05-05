@@ -196,6 +196,8 @@ def render_example(A, b, title='Example'):
     st.write(x)
     # Export buttons
     md_report = generate_report_md(A, b, steps, x)
+    st.subheader('Report Preview')
+    st.markdown(md_report)
     # Create a unique slug from title with a random UUID suffix for widget keys
     slug_base = ''.join(c.lower() if c.isalnum() else '_' for c in title)
     slug = f"{slug_base}_{uuid.uuid4().hex}"
